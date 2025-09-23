@@ -3,8 +3,6 @@ import { ExecutorOptionType } from '@layerzerolabs/lz-v2-utilities'
 import { generateConnectionsConfig } from '@layerzerolabs/metadata-tools'
 import { OAppEnforcedOption, OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat'
 
-import { getOftStoreAddress } from './tasks/solana'
-
 // Vana OFT Adapter - wraps existing RDAT token
 const vanaContract: OmniPointHardhat = {
     eid: EndpointId.VANA_V2_MAINNET, // 30330
@@ -14,7 +12,7 @@ const vanaContract: OmniPointHardhat = {
 // Solana OFT Store - mints/burns RDAT representations
 const solanaContract: OmniPointHardhat = {
     eid: EndpointId.SOLANA_V2_MAINNET, // 30168
-    address: getOftStoreAddress(EndpointId.SOLANA_V2_MAINNET),
+    address: 'FkVGPvVoE3oYoz6EDuJ3ZP2D9aSgM5HHuxk3jf9ckU35', // OFT Store address from deployment
 }
 
 // EVM (Vana) enforced options
