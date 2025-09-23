@@ -20,7 +20,7 @@ const EVM_ENFORCED_OPTIONS: OAppEnforcedOption[] = [
     {
         msgType: 1,
         optionType: ExecutorOptionType.LZ_RECEIVE,
-        gas: 150000, // Increased gas for Vana
+        gas: 1000000, // Arbitrum-compatible gas limit per Stargate requirements
         value: 0,
     },
 ]
