@@ -45,6 +45,18 @@ const config: HardhatUserConfig = {
         cache: 'cache/hardhat',
         tests: 'test/hardhat',
     },
+    networks: {
+        'islander-mainnet': {
+            eid: EndpointId.VANA_V2_MAINNET,
+            url: 'https://rpc.vana.org',
+            accounts,
+        },
+        'base-mainnet': {
+            eid: EndpointId.BASE_V2_MAINNET,
+            url: 'https://mainnet.base.org',
+            accounts,
+        },
+    },
     solidity: {
         compilers: [
             {
