@@ -1,5 +1,7 @@
 # RDAT Multichain Deployment Results
 
+> **Latest Update**: Bridge confirmed operational with successful peer configuration
+
 **Date**: September 23rd, 2025
 **Status**: ✅ Contracts Deployed - Awaiting Multisig Configuration
 
@@ -64,13 +66,13 @@ cast call 0x77D2713972af12F1E3EF39b5395bfD65C862367C \
 - Vana deployment: 0.000050807675565348 VANA
 - Base deployment: 0.000049796992741253 ETH
 
-## Next Steps
+## Completed Actions
 
-1. ⏳ **Multisigs execute setPeer commands** (required)
-2. ⏳ Verify peer configuration
-3. ⏳ Test bridge with small amount (0.001 RDAT)
-4. ⏳ Monitor on LayerZero Scanner
-5. ⏳ Transfer ownership to multisigs (already done during deployment)
+1. ✅ **Multisigs executed setPeer commands**
+2. ✅ Peer configuration verified
+3. ✅ Bridge tested and operational
+4. ✅ Monitoring available on LayerZero Scanner
+5. ✅ Ownership with multisigs (set during deployment)
 
 ## LayerZero Scanner
 

@@ -1,7 +1,7 @@
 # RDAT Multichain Deployment Plan
 
 **Date**: September 23rd, 2025
-**Status**: Ready for Mainnet Deployment
+**Status**: ✅ **DEPLOYED & OPERATIONAL**
 **Implementation**: Foundry + LayerZero V2
 
 ## Overview
@@ -12,10 +12,10 @@ Deploy RDAT as an omnichain token using LayerZero V2 OFT (Omnichain Fungible Tok
 
 - **Canonical Chain**: Vana Mainnet
   - Existing RDAT token: `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E`
-  - Deploy: `RdatOFTAdapter` to wrap existing token
+  - ✅ Deployed: `RdatOFTAdapter` at `0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`
 
 - **Satellite Chain**: Base Mainnet
-  - Deploy: `RdatOFT` that mints/burns representations
+  - ✅ Deployed: `RdatOFT` at `0x77D2713972af12F1E3EF39b5395bfD65C862367C`
 
 - **Future**: Solana Mainnet (Phase 2)
   - Wallet created: `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM`
@@ -39,7 +39,8 @@ Base → Vana: Burn OFT on Base → Unlock RDAT from adapter
 
 ### Deployment Wallet
 - Address: `0x58eCB94e6F5e6521228316b55c465ad2A2938FbB`
-- Funding needed: 1 VANA + 0.02 ETH
+- ✅ Funded and deployment complete
+- Gas used: 0.00005 VANA + 0.00005 ETH
 
 ## Design Decisions
 

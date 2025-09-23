@@ -1,37 +1,39 @@
 # RDAT Multichain - LayerZero V2 Implementation
 
-Deploy RDAT as an omnichain token across Vana and Base using LayerZero V2.
+**Status**: 🟢 **LIVE** - Bridge Operational as of September 23rd, 2025
+
+RDAT is now an omnichain token bridging Vana and Base networks using LayerZero V2 OFT standard.
+
+## Deployed Contracts
+
+### Mainnet Deployments (LIVE)
+
+| Network | Contract Type | Address | Status |
+|---------|--------------|---------|--------|
+| **Vana** | OFT Adapter | [`0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`](https://vanascan.io/address/0xd546C45872eeA596155EAEAe9B8495f02ca4fc58) | ✅ Live |
+| **Base** | RDAT OFT | [`0x77D2713972af12F1E3EF39b5395bfD65C862367C`](https://basescan.org/address/0x77D2713972af12F1E3EF39b5395bfD65C862367C) | ✅ Live |
+
+### Bridge Status
+- ✅ Peer connections established
+- ✅ Multisig ownership configured
+- ✅ Ready for production use
+- 📊 Monitor on [LayerZero Scan](https://layerzeroscan.com/)
 
 ## Quick Start
 
-1. **Fund Deployer**: Send 1 VANA + 0.02 ETH to `0x58eCB94e6F5e6521228316b55c465ad2A2938FbB`
+### For Users - Bridging RDAT
 
-2. **Configure Environment**:
-```bash
-cd foundry
-cp ../.env.example .env
-# Add DEPLOYER_PRIVATE_KEY from rdatadao-contracts
-```
+1. **Vana to Base**: Lock RDAT on Vana to receive on Base
+2. **Base to Vana**: Burn RDAT on Base to unlock on Vana
+3. See [`TEST_BRIDGE.md`](TEST_BRIDGE.md) for detailed instructions
 
-3. **Deploy**:
-```bash
-# Vana
-forge script script/DeployVanaAdapter.s.sol --rpc-url https://rpc.vana.org --broadcast
+### For Developers - Deployment (Already Complete)
 
-# Base
-forge script script/DeployBaseOFT.s.sol --rpc-url https://mainnet.base.org --broadcast
-```
-
-4. **Wire Contracts**:
-```bash
-# Update .env with deployed addresses, then:
-forge script script/WireContracts.s.sol --rpc-url <chain> --broadcast
-```
-
-5. **Test Bridge**:
-```bash
-forge script script/TestBridge.s.sol --rpc-url https://rpc.vana.org --broadcast
-```
+The deployment process has been completed. For historical reference:
+1. Contracts deployed using Foundry
+2. Multisig ownership set during deployment
+3. Peer connections configured via multisig transactions
+4. Bridge tested and operational
 
 ## Architecture
 

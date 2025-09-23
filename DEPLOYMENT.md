@@ -1,24 +1,37 @@
 # RDAT Multichain Deployment Guide
 
-## Pre-Deployment
+> **🎉 STATUS: DEPLOYMENT COMPLETE - BRIDGE OPERATIONAL**
+>
+> This guide documents the deployment process that was successfully executed on September 23rd, 2025.
+
+## Deployment Summary
+
+### Deployed Contracts
+- **Vana OFT Adapter**: `0xd546C45872eeA596155EAEAe9B8495f02ca4fc58` ✅
+- **Base RDAT OFT**: `0x77D2713972af12F1E3EF39b5395bfD65C862367C` ✅
+- **Status**: Bridge fully operational
+
+---
+
+## Historical Reference: Pre-Deployment Checklist
 
 ### Environment Setup
-- [ ] Foundry installed and updated to latest version
-- [ ] `.env` file configured in `/foundry` directory
-- [ ] Private key secured with proper permissions
-- [ ] Git hooks enabled to prevent key commits
+- [✓] Foundry installed and updated to latest version
+- [✓] `.env` file configured in `/foundry` directory
+- [✓] Private key secured with proper permissions
+- [✓] Git hooks enabled to prevent key commits
 
 ### Wallet Funding
-- [ ] Deployer wallet: `0x58eCB94e6F5e6521228316b55c465ad2A2938FbB`
-- [ ] Vana: Fund with 1 VANA
-- [ ] Base: Fund with 0.02 ETH
-- [ ] Solana wallet (Phase 2): `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM`
+- [✓] Deployer wallet: `0x58eCB94e6F5e6521228316b55c465ad2A2938FbB`
+- [✓] Vana: Funded with 1.22 VANA
+- [✓] Base: Funded with 0.02 ETH
+- [✓] Solana wallet (Phase 2): `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM`
 
 ### Verification
-- [ ] Existing RDAT token verified at `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E`
-- [ ] Vana endpoint verified at `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa`
-- [ ] Base endpoint verified at `0x1a44076050125825900e736c501f859c50fE728c`
-- [ ] Total supply confirmed as 100M RDAT
+- [✓] Existing RDAT token verified at `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E`
+- [✓] Vana endpoint verified at `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa`
+- [✓] Base endpoint verified at `0x1a44076050125825900e736c501f859c50fE728c`
+- [✓] Total supply confirmed as 100M RDAT
 
 ## 🧪 Testing Phase
 
