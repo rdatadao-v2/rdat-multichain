@@ -1,8 +1,8 @@
 # RDAT Multichain - LayerZero V2 Implementation
 
-**Status**: 🟢 **LIVE** - Bridge Operational as of September 23rd, 2025
+**Status**: 🟢 **LIVE** - Bridge Operational across Vana, Base, and Solana as of September 23rd, 2025
 
-RDAT is now an omnichain token bridging Vana and Base networks using LayerZero V2 OFT standard.
+RDAT is now an omnichain token bridging Vana, Base, and Solana networks using LayerZero V2 OFT standard.
 
 ## Deployed Contracts
 
@@ -12,6 +12,7 @@ RDAT is now an omnichain token bridging Vana and Base networks using LayerZero V
 |---------|--------------|---------|--------|
 | **Vana** | OFT Adapter | [`0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`](https://vanascan.io/address/0xd546C45872eeA596155EAEAe9B8495f02ca4fc58) | ✅ Live |
 | **Base** | RDAT OFT | [`0x77D2713972af12F1E3EF39b5395bfD65C862367C`](https://basescan.org/address/0x77D2713972af12F1E3EF39b5395bfD65C862367C) | ✅ Live |
+| **Solana** | OFT Program | [`BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f`](https://explorer.solana.com/address/BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f) | ✅ Live |
 
 ### Bridge Status
 - ✅ Peer connections established
