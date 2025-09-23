@@ -68,6 +68,12 @@ wallet.json
 keystore/
 secrets/
 private/
+keypair.json
+recovery-seed.txt
+recover_buffer.py
+**/keypair.json
+**/recovery-seed.txt
+**/recover_buffer.py
 
 # Deployment outputs
 broadcast/
