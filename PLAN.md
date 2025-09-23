@@ -1,290 +1,148 @@
-# RDAT Multichain Rollout with LayerZero v2
+# RDAT Multichain Deployment Plan
 
-We are deploying RDAT as an omnichain token using **LayerZero v2**.  
-Canonical chain = **Vana**. Satellites = **Base Mainnet**, **Solana Mainnet**.
+**Date**: September 23rd, 2025
+**Status**: Ready for Mainnet Deployment
+**Implementation**: Foundry + LayerZero V2
 
-This doc includes context, code samples, repo scaffold layout, and direct references to LayerZero v2 docs.
+## Overview
 
----
+Deploy RDAT as an omnichain token using LayerZero V2 OFT (Omnichain Fungible Token) standard.
 
-## 1. Confirm Chain Support & EIDs
+### Architecture
 
-Every supported chain has a unique **EID** (Endpoint ID).  
-LayerZero v2 does **not** use legacy `chainId`s; all cross-chain references are by **EID**.
+- **Canonical Chain**: Vana Mainnet
+  - Existing RDAT token: `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E`
+  - Deploy: `RdatOFTAdapter` to wrap existing token
 
-- **Vana Mainnet**  
-  - **EID:** `30330`  
-  - **EndpointV2:** `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa`  
-  - Docs: https://docs.layerzero.network/v2/developers/evm/chain-ids
+- **Satellite Chain**: Base Mainnet
+  - Deploy: `RdatOFT` that mints/burns representations
 
-- **Base Mainnet**  
-  - **EID:** `30184`  
-  - **EndpointV2:** `0x1a44076050125825900e736c501f859c50fE728c`  
-  - Docs: https://docs.layerzero.network/v2/developers/evm/chain-ids
+- **Future**: Solana Mainnet (Phase 2)
+  - Wallet created: `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM`
+  - Funded with SOL (ready for deployment)
 
-- **Solana Mainnet**  
-  - **EID:** `30168`  
-  - Has its own ULN & Executor programs.  
-  - Docs: https://docs.layerzero.network/v2/developers/solana/chain-ids
+### Bridge Mechanism
+```
+Vana → Base: Lock RDAT in adapter → Mint OFT on Base
+Base → Vana: Burn OFT on Base → Unlock RDAT from adapter
+```
 
-Background on EIDs: https://docs.layerzero.network/v2/developers/evm/endpoints
+## Configuration
 
----
+### Chain Details
 
-## 2. Choose OFT Contract Type
+| Chain | Chain ID | EID | Endpoint | Multisig/Wallet |
+|-------|----------|-----|----------|-----------------|
+| Vana | 1480 | 30330 | `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa` | `0xe4F7Eca807C57311e715C3Ef483e72Fa8D5bCcDF` |
+| Base | 8453 | 30184 | `0x1a44076050125825900e736c501f859c50fE728c` | `0x90013583c66D2bf16327cB5Bc4a647AcceCF4B9A` |
+| Solana | N/A | 30168 | Uses ULN & Executor programs | `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM` |
 
-- **Vana (canonical RDAT):** Deploy `OFTAdapter` wrapping your ERC-20.  
-  Docs: https://docs.layerzero.network/v2/developers/evm/oft/overview
+### Deployment Wallet
+- Address: `0x58eCB94e6F5e6521228316b55c465ad2A2938FbB`
+- Funding needed: 1 VANA + 0.02 ETH
 
-- **Base (EVM satellite):** Deploy `OFT.sol` that mints/burns RDAT representations.  
-  Docs: https://docs.layerzero.network/v2/developers/evm/oft/overview
+## Design Decisions
 
-- **Solana:** Deploy Solana OFT program (SPL-compatible).  
-  Docs: https://docs.layerzero.network/v2/developers/solana/oft/quickstart
+### 1. Development Stack
+- **Foundry** over Hardhat - Industry standard 2025
+- **Git submodules** over npm/pnpm - No JS dependency issues
+- **Direct mainnet** - No testnet available (Vana Moksha lacks LayerZero)
 
----
+### 2. Security Configuration
+- **DVN**: LayerZero Labs (trusted default)
+- **Multisigs**: Use existing from rdatadao-contracts
+- **Gas Limits**: 80,000 for EVM-to-EVM (standard)
+- **Audit**: Not required (standard LayerZero contracts)
 
-## 3. Scaffold with Official CLI
+### 3. Implementation Choices
+- **No new token on Vana** - Wrap existing RDAT
+- **New token on Base** - Mint/burn representations
+- **No rate limits initially** - Monitor post-deployment
+- **Solana deferred** - Focus on EVM chains first
 
-Scaffold contracts, config, and scripts for deployment + wiring.
+## Phase 2: Solana Integration
 
-**EVM:**
+### Status
+- ✅ Wallet created: `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM`
+- ✅ Wallet funded with SOL on mainnet
+- ✅ Keypair saved: `solana-deployer.json`
+- ⏳ Awaiting successful Vana-Base bridge deployment
+
+### Solana OFT Configuration
+- **Program Type**: SPL-compatible OFT
+- **EID**: 30168
+- **Connection**: Initially Vana ↔ Solana (hub model)
+
+### Deployment Command
 ```bash
-npx create-lz-oapp@latest --example oft
+# When ready for Phase 2
+solana-keygen pubkey solana-deployer.json
+# Should output: FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM
+
+# Deploy OFT program
+anchor deploy --provider.cluster mainnet-beta --keypair solana-deployer.json
 ```
 
-**Solana:**
-```bash
-LZ_ENABLE_SOLANA_OFT_EXAMPLE=1 npx create-lz-oapp@latest
-```
-
-Docs: https://docs.layerzero.network/v2/developers/oapp/quickstart
-
----
-
-## 4. Deploy Contracts
-
-### On Vana (canonical)
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import {OFTAdapter} from "@layerzerolabs/lz-evm-oapp-v2/contracts/oft/OFTAdapter.sol";
-
-/// @title RdatOFTAdapter
-/// @notice Wraps the existing RDAT ERC20 on Vana.
-contract RdatOFTAdapter is OFTAdapter {
-    constructor(
-        address _rdatToken,    // existing RDAT ERC-20
-        address _endpoint,     // EndpointV2 on Vana
-        address _owner         // multisig recommended
-    ) OFTAdapter(_rdatToken, _endpoint, _owner) {}
-}
-```
-
-### On Base (satellite)
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import {OFT} from "@layerzerolabs/lz-evm-oapp-v2/contracts/oft/OFT.sol";
-
-/// @title RdatOFT
-/// @notice Mints/burns RDAT on Base.
-contract RdatOFT is OFT {
-    constructor(
-        address _endpoint,   // EndpointV2 on Base
-        address _owner
-    ) OFT(_endpoint, _owner) {}
-}
-```
-
-### On Solana
-Use the scaffolded Solana OFT program.  
-Docs: https://docs.layerzero.network/v2/developers/solana/oft/quickstart
-
----
-
-## 5. Wire Trusted Peers
-
-Every contract must trust its peers:
-
-```solidity
-// On Vana adapter, trust Base OFT
-setPeer(30184, bytes32(uint256(uint160(baseOFT))));
-
-// On Base OFT, trust Vana adapter
-setPeer(30330, bytes32(uint256(uint160(vanaAdapter))));
-
-// On Vana adapter, trust Solana OFT
-setPeer(30168, bytes32(uint256(uint160(solanaOFT))));
-
-// On Solana OFT, trust Vana adapter (via Solana instruction)
-```
-
-Docs: https://docs.layerzero.network/v2/developers/oapp/configuration
-
----
-
-## 6. Configure Security & Execution
-
-- **DVNs:** Configure quorum.  
-  Docs: https://docs.layerzero.network/v2/developers/technology/uln
-
-- **Executors:** Configure gas providers.  
-  Docs: https://docs.layerzero.network/v2/developers/technology/executor
-
-- **Options:** Pass gas/compute params per message.  
-  Docs: https://docs.layerzero.network/v2/developers/oapp/options
-
----
-
-## 7. Example `layerzero.config.ts`
-
-```ts
-import { ExecutorOptionType } from '@layerzerolabs/lz-v2-utilities';
-import { OAppEnforcedOption, OmniPointHardhat } from '@layerzerolabs/toolbox-hardhat';
-
-const VANA_EID = 30330;
-const BASE_EID = 30184;
-const SOL_EID  = 30168;
-
-export const vanaAdapter: OmniPointHardhat = {
-  eid: VANA_EID,
-  contractName: 'RdatOFTAdapter',
-};
-
-export const baseOFT: OmniPointHardhat = {
-  eid: BASE_EID,
-  contractName: 'RdatOFT',
-};
-
-export const solanaOFT: OmniPointHardhat = {
-  eid: SOL_EID,
-  address: '<YOUR_SOLANA_OFT_STORE_ADDRESS>',
-};
-
-const EVM_OPTIONS: OAppEnforcedOption[] = [
-  { msgType: 1, optionType: ExecutorOptionType.LZ_RECEIVE, gas: 80_000, value: 0 },
-];
-
-const SOL_OPTIONS: OAppEnforcedOption[] = [
-  { msgType: 1, optionType: ExecutorOptionType.LZ_RECEIVE, gas: 200_000, value: 2_500_000 },
-];
-
-export default async function () {
-  const connections = [
-    [vanaAdapter, baseOFT,   [['LayerZero Labs'], []], [1,1], [EVM_OPTIONS, EVM_OPTIONS]],
-    [vanaAdapter, solanaOFT, [['LayerZero Labs'], []], [1,1], [SOL_OPTIONS, EVM_OPTIONS]],
-  ];
-  return { contracts: [{ contract: vanaAdapter }, { contract: baseOFT }, { contract: solanaOFT }], connections };
-}
-```
-
-Docs: https://docs.layerzero.network/v2/developers/oapp/configuration
-
----
-
-## 8. Sending RDAT
-
-### EVM
-```solidity
-import {IOFT} from "@layerzerolabs/lz-evm-oapp-v2/contracts/oft/interfaces/IOFT.sol";
-
-function bridgeToBase(address vanaAdapter, uint32 baseEid, address to, uint256 amt) external payable {
-    IOFT.SendParam memory p = IOFT.SendParam({
-        dstEid: baseEid,
-        to: bytes32(uint256(uint160(to))),
-        amountLD: amt,
-        minAmountLD: amt,
-        extraOptions: bytes(""),
-        composeMsg: bytes(""),
-        oftCmd: bytes("")
-    });
-
-    IOFT(vanaAdapter).send{value: msg.value}(
-        p,
-        IOFT.PayParam({nativeFee: msg.value, lzTokenFee: 0}),
-        address(0)
-    );
-}
-```
-
-### Solana
-```ts
-import { OftClient } from "@layerzerolabs/oft-v2-solana-sdk";
-
-const client = new OftClient(connection, wallet);
-await client.send({
-  dstEid: 30330,              // Vana EID
-  to: "<recipient_bytes32>",  // convert to bytes32
-  amount: 100_000_000,        // RDAT in local decimals
-});
-```
-
-Docs:  
-- EVM: https://docs.layerzero.network/v2/developers/evm/oft/overview  
-- Solana: https://docs.layerzero.network/v2/developers/solana/oft/quickstart
-
----
-
-## 9. Repo Scaffold Layout
-
-A recommended repo structure:
+## Project Structure
 
 ```
-rdat-omnichain/
-├── contracts/
-│   ├── RdatOFTAdapter.sol   # on Vana
-│   ├── RdatOFT.sol          # on Base
-│   └── (solana program)     # generated by CLI
-├── config/
-│   └── layerzero.config.ts
-├── scripts/
-│   ├── deploy-vana.ts
-│   ├── deploy-base.ts
-│   ├── deploy-solana.ts
-│   ├── wire.ts              # runs setPeer across EIDs
-│   └── send-test.ts         # bridges a test amount
-├── test/
-│   └── OFT.test.ts
-├── package.json
-└── README.md
+rdat-multichain/
+├── foundry/                    # Main implementation
+│   ├── src/
+│   │   ├── RdatOFTAdapter.sol # Vana: wraps existing RDAT
+│   │   └── RdatOFT.sol        # Base: new token
+│   ├── script/
+│   │   ├── DeployVanaAdapter.s.sol
+│   │   ├── DeployBaseOFT.s.sol
+│   │   ├── WireContracts.s.sol
+│   │   └── TestBridge.s.sol
+│   └── test/
+│       └── ForkTest.t.sol
+└── rdatadao-contracts/        # Symlink to existing contracts
 ```
 
-- **`contracts/`** → Solidity + Solana OFT contracts.  
-- **`config/`** → `layerzero.config.ts` for wiring.  
-- **`scripts/`** → deployment, wiring, bridging test flows.  
-- **`test/`** → integration tests with Hardhat/Foundry.  
+## Testing Strategy
 
----
+Since Vana Moksha testnet doesn't have LayerZero:
 
-## 10. Rollout Checklist
+1. **Fork Testing**: Test against forked mainnet
+2. **Simulation**: Run deployment simulation scripts
+3. **Small Amounts**: Test with minimal RDAT first
+4. **Monitoring**: Use LayerZero Scanner post-deployment
 
-1. Verify Vana, Base, Solana EIDs + Endpoints.  
-2. Deploy `RdatOFTAdapter` on Vana.  
-3. Deploy `RdatOFT` on Base.  
-4. Deploy Solana OFT program.  
-5. Wire peers (setPeer both ways).  
-6. Configure DVNs + Executor + options.  
-7. Run `wire.ts` to auto-configure.  
-8. Run `send-test.ts` to bridge a small RDAT.  
-9. Confirm total supply consistency across chains.
+## Risk Management
 
----
+| Risk | Mitigation |
+|------|------------|
+| Wrong endpoint | Verified via script |
+| Peer misconfiguration | Scripted setPeer calls |
+| No testnet | Fork testing + simulations |
+| Bridge exploit | Standard contracts + multisig control |
+| Supply inconsistency | Total always 100M across chains |
 
-## References
+## LayerZero Deployed Contracts
 
-- EVM Chain IDs: https://docs.layerzero.network/v2/developers/evm/chain-ids  
-- Solana Chain IDs: https://docs.layerzero.network/v2/developers/solana/chain-ids  
-- Endpoints: https://docs.layerzero.network/v2/developers/evm/endpoints  
-- OFT Overview: https://docs.layerzero.network/v2/developers/evm/oft/overview  
-- Solana OFT Quickstart: https://docs.layerzero.network/v2/developers/solana/oft/quickstart  
-- OApp Quickstart: https://docs.layerzero.network/v2/developers/oapp/quickstart  
-- OApp Config: https://docs.layerzero.network/v2/developers/oapp/configuration  
-- DVNs: https://docs.layerzero.network/v2/developers/technology/uln  
-- Executors: https://docs.layerzero.network/v2/developers/technology/executor  
-- Options: https://docs.layerzero.network/v2/developers/oapp/options  
-- Transfer API: https://docs.layerzero.network/v2/developers/oapp/transfer-api  
+### DVN Addresses (Mainnet)
+- **LayerZero Labs DVN**: Check at deployment time via https://docs.layerzero.network/v2/developers/evm/technical-reference/dvn-addresses
 
----
+### Executor Addresses
+- **LayerZero Executor**: Check at deployment time via https://docs.layerzero.network/v2/developers/evm/technical-reference/executor-addresses
+
+### Libraries
+- **SendUln302**: Default send library
+- **ReceiveUln302**: Default receive library
+
+## Resources
+
+### LayerZero Documentation
+- **Main Docs**: https://docs.layerzero.network/v2
+- **EVM Chain IDs**: https://docs.layerzero.network/v2/developers/evm/technical-reference/deployed-contracts
+- **Solana Chain IDs**: https://docs.layerzero.network/v2/developers/solana/technical-reference/deployed-contracts
+- **OFT Quickstart**: https://docs.layerzero.network/v2/developers/evm/oft/quickstart
+- **Solana OFT**: https://docs.layerzero.network/v2/developers/solana/oft/quickstart
+- **Message Options**: https://docs.layerzero.network/v2/developers/evm/protocol-gas-settings/options
+- **DVN Configuration**: https://docs.layerzero.network/v2/developers/evm/protocol-gas-settings/default-config
+- **LayerZero Scanner**: https://layerzeroscan.com/
+
+### Reference Implementation
+- **Existing RDAT**: `/Users/nissan/code/rdatadao-contracts/`
