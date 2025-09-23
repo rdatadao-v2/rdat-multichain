@@ -225,12 +225,14 @@ await configureExecutor(vanaAdapter, executorAddress);
 ## Next Steps
 
 1. ✅ Validate Vana endpoint address
-2. ⬜ Scaffold project with LayerZero CLI
-3. ⬜ Implement contracts
-4. ⬜ Deploy to testnets
-5. ⬜ Test thoroughly
-6. ⬜ Audit
-7. ⬜ Deploy to mainnet
+2. ✅ Scaffold project with LayerZero CLI (Hardhat/pnpm)
+3. ✅ Implement contracts (RdatOFTAdapter, RdatOFT)
+4. ✅ Create deployment scripts and tooling
+5. 🔄 **CURRENT**: Migrate to Foundry (2025 best practice)
+6. ⬜ Deploy to mainnet (Foundry-based)
+7. ⬜ Test thoroughly
+8. ⬜ Audit
+9. ⬜ Production deployment
 
 ## Resources
 - LayerZero Docs: https://docs.layerzero.network/v2
