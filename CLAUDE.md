@@ -4,63 +4,130 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a multichain deployment of the RDAT token using LayerZero v2's Omnichain Fungible Token (OFT) standard. The token is canonical on Vana Mainnet and has satellite deployments on Base Mainnet and Solana Mainnet.
+RDAT multichain bridge implementation using LayerZero V2 OFT (Omnichain Fungible Token) standard across Vana, Base, and Solana networks.
 
-## Key Chain Information
+## Build Commands
 
-- **Vana Mainnet** (Canonical Chain)
-  - EID: 30330
-  - EndpointV2: `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa`
-  - Contract Type: OFTAdapter (wraps existing RDAT ERC-20)
-
-- **Base Mainnet** (Satellite)
-  - EID: 30184
-  - EndpointV2: `0x1a44076050125825900e736c501f859c50fE728c`
-  - Contract Type: OFT (mints/burns RDAT representations)
-
-- **Solana Mainnet** (Satellite)
-  - EID: 30168
-  - Contract Type: Solana OFT program (SPL-compatible)
-
-## Development Commands
-
-### Initial Setup
+### EVM Contracts (Foundry)
 ```bash
-# Scaffold EVM contracts and configuration
-npx create-lz-oapp@latest --example oft
-
-# Scaffold Solana OFT (if needed)
-LZ_ENABLE_SOLANA_OFT_EXAMPLE=1 npx create-lz-oapp@latest
+cd contracts
+forge build                           # Build contracts
+forge test                           # Run all tests
+forge test --match-test testName -vvv # Run single test with verbose output
+forge script script/DeployWrapper.s.sol --rpc-url vana --broadcast  # Deploy to Vana
+forge verify-contract ADDRESS src/RDATBridgeWrapper.sol:RDATBridgeWrapper --chain vana  # Verify contract
 ```
 
-### Deployment Workflow
-1. Deploy `RdatOFTAdapter` on Vana (wraps existing RDAT token)
-2. Deploy `RdatOFT` on Base (mints/burns representations)
-3. Deploy Solana OFT program on Solana
-4. Wire trusted peers using `setPeer()` calls bidirectionally
-5. Configure DVNs (Decentralized Verification Networks) and Executors
-6. Run configuration scripts to complete setup
+### Solana Program (Anchor)
+```bash
+cd solana-oft/oft-solana
+anchor build                         # Build program (use Docker if local fails)
+anchor test                          # Run tests
+anchor deploy --provider.cluster mainnet  # Deploy to mainnet
+npx jest test/anchor                 # Run JavaScript tests
+```
 
-## Architecture Notes
+### Configuration & Deployment
+```bash
+# Deploy enforced options configuration (requires multisig)
+cd solana-oft/oft-solana
+npx hardhat lz:oapp:config:set --network vana
+```
 
-### Contract Types
-- **OFTAdapter**: Used on Vana to wrap the existing RDAT ERC-20 token
-- **OFT**: Used on Base for minting/burning RDAT representations
-- **Solana OFT**: SPL-compatible program for Solana deployment
+## Architecture
 
-### Cross-Chain Communication
-- All cross-chain references use EIDs (Endpoint IDs), not traditional chain IDs
-- Each contract must explicitly trust its peers via `setPeer()` configuration
-- Messages include gas/compute parameters configured via LayerZero Options
+### Contract Deployment Model
+```
+Vana (Canonical)        Base (Satellite)         Solana (Satellite)
+     ↓                        ↓                         ↓
+OFT Adapter              OFT Contract             OFT Program
+(wraps RDAT)            (mints/burns)            (SPL token)
+     ↓                        ↓                         ↓
+0xd546C4...fc58         0x77D27...367C           BQWFM5...ax4f
+```
 
-### Key Implementation Details
-- When bridging tokens, use `IOFT.SendParam` structure with destination EID
-- Always set `minAmountLD` to handle potential slippage
-- Configure appropriate gas limits: ~80,000 for EVM, ~200,000 for Solana
-- Total supply consistency must be maintained across all chains
+### Cross-Chain Message Flow
+1. **Lock & Mint**: User locks RDAT on Vana → LayerZero message → Mint on destination
+2. **Burn & Unlock**: User burns on satellite → LayerZero message → Unlock on Vana
+3. **Message verification**: DVNs validate cross-chain messages
+4. **Execution**: Executors deliver messages to destination chains
 
-## Important LayerZero v2 References
-- Chain IDs/EIDs: https://docs.layerzero.network/v2/developers/evm/chain-ids
-- OFT Overview: https://docs.layerzero.network/v2/developers/evm/oft/overview
-- Solana OFT: https://docs.layerzero.network/v2/developers/solana/oft/quickstart
-- Configuration: https://docs.layerzero.network/v2/developers/oapp/configuration
+### Key Contracts
+
+#### Vana OFT Adapter
+- Wraps existing RDAT ERC20 token at `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E`
+- Manages lock/unlock for cross-chain transfers
+- Deployed at `0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`
+
+#### Base OFT
+- Mints/burns RDAT representations
+- No underlying token - OFT is the token itself
+- Deployed at `0x77D2713972af12F1E3EF39b5395bfD65C862367C`
+
+#### Solana OFT Program
+- Program ID: `BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f`
+- SPL Mint: `HVGrNMrX2uNsFhdvS73BgvGzHVb7VwPHYQwgteC7WR8y`
+- Uses PDAs for OFT Store and escrow accounts
+
+#### Burn Fee Wrapper (Optional)
+- Implements 0.01% burn fee on bridges
+- Burns to `0x000000000000000000000000000000000000dEaD`
+- Located in `contracts/src/RDATBridgeWrapper.sol`
+
+### LayerZero Configuration
+
+#### Endpoint IDs (EIDs)
+- Vana: 30330
+- Base: 30184
+- Solana: 30168
+
+#### Enforced Options
+- EVM chains: 1,000,000 gas (Arbitrum-compatible)
+- Solana: 300,000 compute units + 2,039,280 lamports rent
+
+#### Peer Connections
+Peers must be bidirectionally configured via multisig:
+- Vana ↔ Base: Operational
+- Vana → Solana: Configured
+- Solana → Vana: Pending
+
+## Critical Implementation Details
+
+### When Bridging Tokens
+- Use `SendParam` struct with destination EID (not chain ID)
+- Set `minAmountLD` for slippage protection (typically 99% of amount)
+- Include LayerZero fee in native token (VANA/ETH/SOL)
+- Monitor via LayerZero Scan for transaction status
+
+### Decimal Handling
+- Vana/Base: 18 decimals
+- Solana: 9 decimals local, 6 shared decimals for bridging
+- LayerZero handles decimal conversion automatically
+
+### Security Model
+- All contracts owned by multisigs
+- Vana multisig: `0xe4F7Eca807C57311e715C3Ef483e72Fa8D5bCcDF`
+- Base multisig: `0x90013583c66D2bf16327cB5Bc4a647AcceCF4B9A`
+- Solana authority transfer pending to multisig
+
+## Deployed Addresses
+
+### Vana Mainnet
+- RDAT Token: `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E`
+- OFT Adapter: `0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`
+- LayerZero Endpoint: `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa`
+
+### Base Mainnet
+- OFT Contract: `0x77D2713972af12F1E3EF39b5395bfD65C862367C`
+- LayerZero Endpoint: `0x1a44076050125825900e736c501f859c50fE728c`
+
+### Solana Mainnet
+- Program: `BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f`
+- SPL Mint: `HVGrNMrX2uNsFhdvS73BgvGzHVb7VwPHYQwgteC7WR8y`
+- OFT Store: `FkVGPvVoE3oYoz6EDuJ3ZP2D9aSgM5HHuxk3jf9ckU35`
+
+## Documentation Structure
+- `docs/guides/` - User and developer guides
+- `docs/deployment/` - Deployment records and process
+- `docs/architecture/` - Technical architecture details
+- `docs/reference/` - Project reference and planning
