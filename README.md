@@ -40,6 +40,29 @@ The deployment process has been completed. For historical reference:
 
 ## How It Works
 
+```mermaid
+graph TB
+    subgraph "Vana Network (Chain ID: 1480)"
+        V1["RDAT Token<br/>0x2c1CB4...A996E"]
+        V2["OFT Adapter<br/>0xd546C4...c4fc58"]
+        V1 -->|Lock tokens| V2
+    end
+
+    V2 <-.->|"LayerZero Protocol<br/>(1-3 minutes)"|B2
+
+    subgraph "Base Network (Chain ID: 8453)"
+        B2["RDAT OFT<br/>0x77D271...62367C"]
+        B3[User Wallet]
+        B2 -->|Mint/Burn| B3
+    end
+
+    style V1 fill:#e1f5fe
+    style B3 fill:#e8f5e9
+    style V2 fill:#fff3e0
+    style B2 fill:#fff3e0
+```
+
+### Bridge Operations
 - **Vana → Base**: Lock RDAT in adapter → Mint OFT on Base
 - **Base → Vana**: Burn OFT on Base → Unlock RDAT from adapter
 - **Time**: ~1-3 minutes per transfer

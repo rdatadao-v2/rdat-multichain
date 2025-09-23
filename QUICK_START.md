@@ -1,5 +1,17 @@
 # RDAT Bridge Quick Start
 
+## 🌉 Visual Overview
+
+```mermaid
+graph LR
+    A[1. Approve] -->|Allow spending| B[2. Bridge]
+    B -->|Wait 1-3 min| C[3. Receive]
+
+    style A fill:#ffecb3
+    style B fill:#c5e1a5
+    style C fill:#b3e5fc
+```
+
 ## 🚀 Bridge Your RDAT in 3 Steps
 
 ### Step 1: Approve

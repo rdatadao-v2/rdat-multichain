@@ -4,6 +4,44 @@
 
 RDAT can now be bridged between Vana and Base networks!
 
+## Bridge Flow Visualization
+
+```mermaid
+graph LR
+    subgraph Vana Network
+        A[RDAT Token] -->|Lock| B[OFT Adapter]
+    end
+
+    B -.->|LayerZero Message| C
+
+    subgraph Base Network
+        C[RDAT OFT] -->|Mint| D[Your Wallet]
+    end
+
+    style A fill:#9f9,stroke:#333,stroke-width:2px
+    style D fill:#9f9,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+```
+
+### Reverse Bridge (Base → Vana)
+
+```mermaid
+graph RL
+    subgraph Base Network
+        E[RDAT OFT] -->|Burn| F[Bridge]
+    end
+
+    F -.->|LayerZero Message| G
+
+    subgraph Vana Network
+        G[OFT Adapter] -->|Unlock| H[RDAT Token]
+    end
+
+    style E fill:#f99,stroke:#333,stroke-width:2px
+    style H fill:#9f9,stroke:#333,stroke-width:2px
+```
+
 ## Bridging Options
 
 ### Option 1: Direct Contract Interaction (Current)
@@ -27,6 +65,23 @@ Since this is a newly deployed bridge, it may not yet be integrated into UI inte
 - **XY Finance**: https://xy.finance/
 
 ## How to Bridge Using Contracts (Available Now)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant RDAT as RDAT Token
+    participant Adapter as Vana Adapter
+    participant LZ as LayerZero
+    participant OFT as Base OFT
+
+    User->>RDAT: 1. Approve adapter
+    User->>Adapter: 2. Call send() + fee
+    Adapter->>RDAT: Lock tokens
+    Adapter->>LZ: Send message
+    Note over LZ: ~1-3 minutes
+    LZ->>OFT: Deliver message
+    OFT->>User: Mint RDAT on Base
+```
 
 ### Prerequisites
 1. RDAT tokens in your wallet

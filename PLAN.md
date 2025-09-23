@@ -22,10 +22,35 @@ Deploy RDAT as an omnichain token using LayerZero V2 OFT (Omnichain Fungible Tok
   - Funded with SOL (ready for deployment)
 
 ### Bridge Mechanism
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    state "Vana Network" as vana {
+        [*] --> Locked: User sends RDAT
+        Locked --> Adapter: Tokens locked
+        Adapter --> LZ1: Send message
+    }
+
+    state "LayerZero" as lz {
+        LZ1 --> Verify: Validate
+        Verify --> LZ2: Route message
+    }
+
+    state "Base Network" as base {
+        LZ2 --> OFT: Receive message
+        OFT --> Minted: Mint tokens
+        Minted --> [*]: User receives
+    }
+
+    vana --> lz: Cross-chain message
+    lz --> base: Deliver & mint
 ```
-Vana → Base: Lock RDAT in adapter → Mint OFT on Base
-Base → Vana: Burn OFT on Base → Unlock RDAT from adapter
-```
+
+**Flow Summary**:
+- Vana → Base: Lock RDAT in adapter → Mint OFT on Base
+- Base → Vana: Burn OFT on Base → Unlock RDAT from adapter
 
 ## Configuration
 
