@@ -20,14 +20,19 @@
    - Anchor.toml updated ✅
    - Using LayerZero's working example ✅
 
-## ✅ Deployment Complete!
+## ✅ Deployment & Configuration Complete!
 
 **Program Successfully Deployed!**
 - Program ID: `BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f`
 - Data Length: 557,168 bytes
 - Authority: `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM`
 - Deployed in Slot: 368726512
-- Balance: 3.88 SOL (rent-exempt)
+
+**OFT Store Created!**
+- Mint: `HVGrNMrX2uNsFhdvS73BgvGzHVb7VwPHYQwgteC7WR8y`
+- OFT Store: `FkVGPvVoE3oYoz6EDuJ3ZP2D9aSgM5HHuxk3jf9ckU35`
+- Escrow: `ADreZbhDXJh3XfcQq6dheTPuHp8WriJ2Jzyvwuxvd7Bx`
+- Mint Authority: OFT Store only (frozen)
 
 ## 📋 Next Steps
 
@@ -86,7 +91,7 @@ graph TB
 |---------|----------|--------|
 | Vana | `0xd546C45872eeA596155EAEAe9B8495f02ca4fc58` | ✅ Live |
 | Base | `0x77D2713972af12F1E3EF39b5395bfD65C862367C` | ✅ Live |
-| Solana | `BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f` | ✅ Deployed |
+| Solana | `BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f` | ✅ Ready |
 
 ## 💰 Cost Tracking
 
