@@ -1,119 +1,114 @@
-# RDAT Multichain - LayerZero V2 Implementation
+# RDAT Multichain Bridge
 
-**Status**: 🟢 **LIVE** - Bridge Operational across Vana, Base, and Solana as of September 23rd, 2025
+RDAT token deployed across multiple chains using LayerZero V2 OFT (Omnichain Fungible Token) standard.
 
-RDAT is now an omnichain token bridging Vana, Base, and Solana networks using LayerZero V2 OFT standard.
+## 📊 Status: ✅ **BRIDGE OPERATIONAL**
 
-## Deployed Contracts
+RDAT is successfully deployed and operational across **Vana**, **Base**, and **Solana** networks with LayerZero V2 infrastructure.
 
-### Mainnet Deployments (LIVE)
+## 🌐 Networks & Contracts
 
-| Network | Contract Type | Address | Status |
-|---------|--------------|---------|--------|
-| **Vana** | OFT Adapter | [`0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`](https://vanascan.io/address/0xd546C45872eeA596155EAEAe9B8495f02ca4fc58) | ✅ Live |
-| **Base** | RDAT OFT | [`0x77D2713972af12F1E3EF39b5395bfD65C862367C`](https://basescan.org/address/0x77D2713972af12F1E3EF39b5395bfD65C862367C) | ✅ Live |
-| **Solana** | OFT Program | [`BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f`](https://explorer.solana.com/address/BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f) | ✅ Live |
+### Vana Mainnet (Canonical)
+- **Contract**: OFT Adapter `0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`
+- **Type**: Wraps existing RDAT token
+- **Explorer**: [Vanascan](https://vanascan.io/address/0xd546C45872eeA596155EAEAe9B8495f02ca4fc58)
 
-### Bridge Status
-- ✅ Peer connections established
-- ✅ Multisig ownership configured
-- ✅ Ready for production use
-- 📊 Monitor on [LayerZero Scan](https://layerzeroscan.com/)
+### Base Mainnet
+- **Contract**: OFT `0x77D2713972af12F1E3EF39b5395bfD65C862367C`
+- **Type**: Mints/burns RDAT representations
+- **Explorer**: [Basescan](https://basescan.org/address/0x77D2713972af12F1E3EF39b5395bfD65C862367C)
 
-## Quick Start
+### Solana Mainnet
+- **Program**: `BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f`
+- **SPL Mint**: `HVGrNMrX2uNsFhdvS73BgvGzHVb7VwPHYQwgteC7WR8y`
+- **Type**: SPL token integration with LayerZero
+- **Explorer**: [Solana Explorer](https://explorer.solana.com/address/BQWFM5WBsHcAqQszdRtW2r5suRciePEFKeRrEJChax4f)
 
-### For Users - Bridging RDAT
+## 🌉 Bridge Status
 
-1. **Vana to Base**: Lock RDAT on Vana to receive on Base
-2. **Base to Vana**: Burn RDAT on Base to unlock on Vana
+- ✅ **Vana ↔ Base**: Fully operational (bidirectional)
+- ✅ **Vana → Solana**: Configured and operational
+- ⏳ **Solana → Vana**: Available when needed
 
-📖 **Bridging Guides**:
-- [`USER_BRIDGING_GUIDE.md`](USER_BRIDGING_GUIDE.md) - Complete user guide with UI options
-- [`TEST_BRIDGE.md`](TEST_BRIDGE.md) - Technical testing instructions
+## 📖 Documentation
 
-### For Developers - Deployment (Already Complete)
+**All documentation is organized in the `docs/` folder:**
 
-The deployment process has been completed. For historical reference:
-1. Contracts deployed using Foundry
-2. Multisig ownership set during deployment
-3. Peer connections configured via multisig transactions
-4. Bridge tested and operational
+### 👥 **For Users**
+- **[📖 Documentation Hub](./docs/README.md)** - Start here for everything
+- **[🚀 Quick Start Guide](./docs/guides/QUICK_START.md)** - Get started with RDAT multichain
+- **[🌉 User Bridging Guide](./docs/guides/USER_BRIDGING_GUIDE.md)** - How to bridge RDAT between chains
 
-## How It Works
+### 👨‍💻 **For Developers**
+- **[🛠️ Frontend Integration Guide](./docs/guides/FRONTEND_INTEGRATION_GUIDE.md)** - Build custom bridge UI with burn mechanism
+- **[🏗️ Architecture Overview](./docs/architecture/ARCHITECTURE.md)** - Technical system architecture
+- **[📋 Deployment Results](./docs/deployment/DEPLOYMENT_RESULTS.md)** - All contract addresses and verification
 
-```mermaid
-graph TB
-    subgraph "Vana Network (Chain ID: 1480)"
-        V1["RDAT Token<br/>0x2c1CB4...A996E"]
-        V2["OFT Adapter<br/>0xd546C4...c4fc58"]
-        V1 -->|Lock tokens| V2
-    end
+### 🏢 **For Project Teams**
+- **[📊 Project Summary](./docs/reference/PROJECT_SUMMARY.md)** - Complete project overview
+- **[🎯 Final Status](./docs/reference/FINAL_STATUS.md)** - Current implementation status
+- **[💰 CoinMarketCap Guide](./docs/guides/COINMARKETCAP_LISTING_GUIDE.md)** - Exchange listing requirements
+- **[⭐ Stargate Submission Guide](./docs/guides/STARGATE_SUBMISSION_GUIDE.md)** - Stargate Finance integration
 
-    V2 <-.->|"LayerZero Protocol<br/>(1-3 minutes)"|B2
+## 🏗️ Repository Structure
 
-    subgraph "Base Network (Chain ID: 8453)"
-        B2["RDAT OFT<br/>0x77D271...62367C"]
-        B3[User Wallet]
-        B2 -->|Mint/Burn| B3
-    end
-
-    style V1 fill:#e1f5fe
-    style B3 fill:#e8f5e9
-    style V2 fill:#fff3e0
-    style B2 fill:#fff3e0
+```
+rdat-multichain/
+├── 📁 contracts/              # Foundry smart contracts (Vana & Base)
+├── 📁 solana-oft/             # Anchor Solana program
+├── 📁 docs/                   # 📚 Organized documentation
+│   ├── 📁 guides/             #   User & developer guides
+│   ├── 📁 deployment/         #   Deployment documentation
+│   ├── 📁 architecture/       #   Technical architecture
+│   └── 📁 reference/          #   Project reference materials
+├── 📄 README.md               # This overview
+└── 📄 CLAUDE.md               # Claude Code configuration
 ```
 
-### Bridge Operations
-- **Vana → Base**: Lock RDAT in adapter → Mint OFT on Base
-- **Base → Vana**: Burn OFT on Base → Unlock RDAT from adapter
-- **Time**: ~1-3 minutes per transfer
-- **Fees**: Small LayerZero fee in native tokens (VANA/ETH)
+## ⚡ Key Features
 
-## Bridge User Interfaces
+- **🌉 Cross-Chain Bridge**: Seamless RDAT transfers via LayerZero V2
+- **🔥 Deflationary Burn**: Optional 0.01% burn fee on custom bridge UI
+- **🔒 Multisig Security**: Secure ownership across all chains
+- **📊 Full Monitoring**: LayerZero Scan integration
+- **🚀 Production Ready**: All contracts deployed and operational
+- **📱 Mobile Support**: MetaMask + Phantom wallet integration
 
-| Interface | Status | Notes |
-|-----------|--------|-------|
-| **Direct Contract** | ✅ Live | Use Vanascan/Basescan |
-| **Stargate Finance** | ⏳ Pending | Requires manual addition |
-| **Superbridge** | ⏳ Check | May auto-detect OFT |
-| **Jumper.exchange** | ⏳ Check | May require request |
+## 🛠️ Development
 
-## Documentation
+### EVM Contracts (Vana & Base)
+```bash
+cd contracts
+forge build                    # Build contracts
+forge test                     # Run tests
+forge script DeployWrapper     # Deploy burn wrapper
+```
 
-### User Guides
-- [`USER_BRIDGING_GUIDE.md`](USER_BRIDGING_GUIDE.md) - **How to bridge RDAT tokens**
-- [`TEST_BRIDGE.md`](TEST_BRIDGE.md) - Bridge testing instructions
+### Solana Program
+```bash
+cd solana-oft/oft-solana
+anchor build                   # Build program
+anchor test                    # Run tests
+anchor deploy                  # Deploy to mainnet
+```
 
-### Technical Documentation
-- [`PLAN.md`](PLAN.md) - Architecture and design decisions
-- [`DEPLOYMENT.md`](DEPLOYMENT.md) - Step-by-step deployment guide
-- [`DEPLOYMENT_AUDIT_TRAIL.md`](DEPLOYMENT_AUDIT_TRAIL.md) - Complete deployment history
-- [`MULTISIG_SETUP_INSTRUCTIONS.md`](MULTISIG_SETUP_INSTRUCTIONS.md) - Multisig configuration
-- [`foundry/README.md`](foundry/README.md) - Technical implementation
+## 📞 Support & Resources
 
-## Key Addresses
+- **📖 Complete Documentation**: [./docs/README.md](./docs/README.md)
+- **🔍 LayerZero Scan**: [Track transactions](https://layerzeroscan.com)
+- **💬 LayerZero Discord**: [#dev-support](https://discord.gg/layerzero)
+- **🐛 GitHub Issues**: [Report problems](https://github.com/rdatadao-v2/rdat-multichain/issues)
 
-| Network | Contract/Purpose | Address |
-|---------|-----------------|---------|
-| Vana | RDAT Token | `0x2c1CB448cAf3579B2374EFe20068Ea97F72A996E` |
-| Vana | **OFT Adapter** | **`0xd546C45872eeA596155EAEAe9B8495f02ca4fc58`** ✅ |
-| Vana | LayerZero Endpoint | `0xcb566e3B6934Fa77258d68ea18E931fa75e1aaAa` |
-| Vana | Multisig | `0xe4F7Eca807C57311e715C3Ef483e72Fa8D5bCcDF` |
-| Base | **RDAT OFT** | **`0x77D2713972af12F1E3EF39b5395bfD65C862367C`** ✅ |
-| Base | LayerZero Endpoint | `0x1a44076050125825900e736c501f859c50fE728c` |
-| Base | Multisig | `0x90013583c66D2bf16327cB5Bc4a647AcceCF4B9A` |
-| Solana | Deployer Wallet | `FFMX53TNrX3fRNXC6uGDZEis9NZpTbEV2d53dcwt4rGM` |
+## 🎉 What's Next?
 
-## Implementation
+1. **🏦 Exchange Listings**: DEX liquidity → CoinMarketCap → CEX listings
+2. **⭐ Stargate Integration**: Submit for Stargate Finance UI listing
+3. **🎨 Custom Bridge UI**: Deploy deflationary burn mechanism
+4. **🔄 Bidirectional Solana**: Complete Solana ↔ Vana configuration
 
-The Foundry implementation in `/foundry` contains:
-- Smart contracts (`src/`)
-- Deployment scripts (`script/`)
-- Fork tests (`test/`)
+---
 
-## Security
+**🚀 The bridge is live and ready for cross-chain RDAT transfers!**
 
-- Git hooks prevent accidental key commits
-- Multisig ownership for all contracts
-- Standard LayerZero contracts (no custom code)
-- Fork testing before mainnet deployment
+*Last updated: September 23, 2025*
+*🤖 Built with [Claude Code](https://claude.ai/code)*
