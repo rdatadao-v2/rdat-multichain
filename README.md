@@ -25,7 +25,10 @@ RDAT is now an omnichain token bridging Vana and Base networks using LayerZero V
 
 1. **Vana to Base**: Lock RDAT on Vana to receive on Base
 2. **Base to Vana**: Burn RDAT on Base to unlock on Vana
-3. See [`TEST_BRIDGE.md`](TEST_BRIDGE.md) for detailed instructions
+
+📖 **Bridging Guides**:
+- [`USER_BRIDGING_GUIDE.md`](USER_BRIDGING_GUIDE.md) - Complete user guide with UI options
+- [`TEST_BRIDGE.md`](TEST_BRIDGE.md) - Technical testing instructions
 
 ### For Developers - Deployment (Already Complete)
 
@@ -35,16 +38,33 @@ The deployment process has been completed. For historical reference:
 3. Peer connections configured via multisig transactions
 4. Bridge tested and operational
 
-## Architecture
+## How It Works
 
-- **Vana**: `RdatOFTAdapter` wraps existing RDAT token
-- **Base**: `RdatOFT` mints/burns RDAT representations
-- **Bridge**: Lock on Vana → Mint on Base | Burn on Base → Unlock on Vana
+- **Vana → Base**: Lock RDAT in adapter → Mint OFT on Base
+- **Base → Vana**: Burn OFT on Base → Unlock RDAT from adapter
+- **Time**: ~1-3 minutes per transfer
+- **Fees**: Small LayerZero fee in native tokens (VANA/ETH)
+
+## Bridge User Interfaces
+
+| Interface | Status | Notes |
+|-----------|--------|-------|
+| **Direct Contract** | ✅ Live | Use Vanascan/Basescan |
+| **Stargate Finance** | ⏳ Pending | Requires manual addition |
+| **Superbridge** | ⏳ Check | May auto-detect OFT |
+| **Jumper.exchange** | ⏳ Check | May require request |
 
 ## Documentation
 
+### User Guides
+- [`USER_BRIDGING_GUIDE.md`](USER_BRIDGING_GUIDE.md) - **How to bridge RDAT tokens**
+- [`TEST_BRIDGE.md`](TEST_BRIDGE.md) - Bridge testing instructions
+
+### Technical Documentation
 - [`PLAN.md`](PLAN.md) - Architecture and design decisions
 - [`DEPLOYMENT.md`](DEPLOYMENT.md) - Step-by-step deployment guide
+- [`DEPLOYMENT_AUDIT_TRAIL.md`](DEPLOYMENT_AUDIT_TRAIL.md) - Complete deployment history
+- [`MULTISIG_SETUP_INSTRUCTIONS.md`](MULTISIG_SETUP_INSTRUCTIONS.md) - Multisig configuration
 - [`foundry/README.md`](foundry/README.md) - Technical implementation
 
 ## Key Addresses
